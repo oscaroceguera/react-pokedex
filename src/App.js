@@ -30,7 +30,7 @@ function App() {
           <Route path="/dashboard">
             <Dashboard />
           </Route>
-          <Route path="/detail">
+          <Route path="/detail/:pokemonId">
             <Detail />
           </Route>
         </Switch>
