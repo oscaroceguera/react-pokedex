@@ -81,17 +81,40 @@ console.log("ID", id); // 1
 
 ## v1.3.0 - Agregar pokemon a mi pokedex:
 
-- Crear componente con btn de guardar
-- numero de pokemons guardados
-- Btn de cancelar
-- Si el pokemon es seleccionado deshabilitr btn de guardar
+- Card de pokemon:
+  - Btn Agregar
+  - Btn Eliminar
+  - switch de btns:
+    - Cuando el Pokemon SI esta en el contador mostrar btn eliminar
+    - Cuando el Pokemon NO esta en el contador mostrar btn guardar
+- Agregar cart de pokemons seleccinados para guardar:
+  - btn de guardar
+  - btn de cancelar (limpia array)
+  - numero de pokemos seleccionados y guardados
+  - Guardar pokemons en mockapi
+  - mostrar numero de pokemons guardados en pokedex
+- Cuando el pokemon item ya este registrado deshabilitar btns y menssaje de pokemon guardado
+
+**Estados del componente**
+
+- **Loading:** Cuando se ejecute la consulta mostrar un loading miestras se resuelve la petición.
+- **Error:** mostrar error si la petición falla.
+- **Success:** se guardan los pokemons.
+
+## Vista
+
+![agegar](cart1.png)
+
+![agegar2](cart2.png)
+
+![agegar3](cart3.png)
+
+![agegar4](cart4.png)
 
 ## v1.4.0 - Listado de pokemons guardados:
 
 - Eliminar pokemon
 - Ir al detalle del pokemom
-
-## v1.5.0 - Mostar solo la lista de pokemones no guardados
 
 ## v2.0.0 - desacoplar componentes con context, useReducer
 

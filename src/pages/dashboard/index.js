@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { makeStyles } from "@material-ui/core/styles";
 
 import Loading from "../../components/loading";
 import Error from "../../components/error";
 import List from "../../components/list";
 import EmptyList from "../../components/emptyList";
-
-import { makeStyles } from "@material-ui/core/styles";
+import Pokedex from "../pokedex";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,21 +17,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const pokemonApi = "https://pokeapi.co/api/v2/pokemon?limit=30";
+const pokedexApi = "https://614fd3dba706cd00179b7303.mockapi.io/pokemons";
+
 const Dashboard = () => {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [pokemonsSelected, setPokemonsSelected] = useState([]);
+  const [pokemonsPokedex, setPokemonsPokedex] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setError(null);
       setOpen(false);
       try {
-        const data = await axios
-          .get("https://pokeapi.co/api/v2/pokemon?limit=600")
-          .then((res) => res.data);
+        const data = await axios.get(pokemonApi).then((res) => res.data);
         setLoading(false);
         setData(data.results);
       } catch (error) {
@@ -43,12 +46,61 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setError(null);
+      setOpen(false);
+      try {
+        const data = await axios.get(pokedexApi).then((res) => res.data);
+        setLoading(false);
+        setPokemonsPokedex(data);
+      } catch (error) {
+        setLoading(false);
+        setError("Ocurrio un error!");
+        setOpen(true);
+      }
+    };
+
+    fetchData();
+  }, [pokemonsSelected]);
+
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
 
     setOpen(false);
+  };
+
+  const selectPokemon = (pokemon) => {
+    setPokemonsSelected([...pokemonsSelected, pokemon]);
+  };
+
+  const removePokemon = (id) => {
+    const newList = pokemonsSelected.filter((item) => item.id !== id);
+    setPokemonsSelected(newList);
+  };
+
+  const removeAllPokemon = () => {
+    setPokemonsSelected([]);
+  };
+
+  const savePokemon = async () => {
+    setLoading(true);
+    setError(null);
+    setOpen(false);
+    try {
+      for await (const res of pokemonsSelected.map((i) => i)) {
+        await axios.post(pokedexApi, res);
+      }
+      setLoading(false);
+      setPokemonsSelected([]);
+    } catch (error) {
+      setLoading(false);
+      setError("Ocurrio un error!");
+      setOpen(true);
+    }
   };
 
   if (error)
@@ -61,9 +113,24 @@ const Dashboard = () => {
       {data.length === 0 && <EmptyList />}
       <div className={classes.root}>
         {data.map((pokemon) => {
-          return <List key={pokemon.name} pokemon={pokemon} />;
+          return (
+            <List
+              key={pokemon.name}
+              pokemon={pokemon}
+              selectPokemon={selectPokemon}
+              removePokemon={removePokemon}
+              pokemonsSelected={pokemonsSelected}
+              pokemonsPokedex={pokemonsPokedex}
+            />
+          );
         })}
       </div>
+      <Pokedex
+        pokemonsSelected={pokemonsSelected}
+        pokemonsPokedex={pokemonsPokedex}
+        savePokemon={savePokemon}
+        removeAllPokemon={removeAllPokemon}
+      />
     </>
   );
 };
