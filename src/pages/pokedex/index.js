@@ -58,11 +58,16 @@ const Pokedex = ({
   );
 };
 
+Pokedex.defaultProps = {
+  pokemonsSelected: [],
+  pokemonsPokedex: [],
+};
+
 Pokedex.propTypes = {
   pokemonsSelected: PropTypes.array.isRequired,
-  savePokemon: PropTypes.func.isRequired,
-  pokemonsPokedex: PropTypes.array.isRequired,
-  removeAllPokemon: PropTypes.func.isRequired,
+  savePokemon: PropTypes.func,
+  pokemonsPokedex: PropTypes.array,
+  removeAllPokemon: PropTypes.func,
 };
 
 export default Pokedex;

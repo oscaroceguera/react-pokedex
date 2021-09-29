@@ -7,6 +7,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import Dashboard from "./pages/dashboard";
 import Detail from "./pages/detail";
+import PokedexList from "./pages/pokedex/PokedexList";
 
 import "./App.css";
 
@@ -32,6 +33,9 @@ function App() {
           </Route>
           <Route path="/detail/:pokemonId">
             <Detail />
+          </Route>
+          <Route exact path="/pokedex">
+            <PokedexList />
           </Route>
         </Switch>
       </Router>

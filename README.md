@@ -113,8 +113,25 @@ console.log("ID", id); // 1
 
 ## v1.4.0 - Listado de pokemons guardados:
 
+- Opcion de ir al listado de pokedex `/pokedex`
+- Listado de pokemones en la pokedex
 - Eliminar pokemon
-- Ir al detalle del pokemom
+- Ir al detalle del pokemon de la pokedex
+
+**Estados del componente**
+
+- **Loading:** Cuando se ejecute la consulta mostrar un loading miestras se resuelve la petición.
+- **Error:** mostrar error si la petición falla.
+- **Lista vacia:** en caso de que la petición retorne algo vacio.
+- **Success:** se muestra el listado.
+
+## Vista
+
+**IR A POKEDEX:**
+![gopokedex](gopokedex.png)
+
+**POKEDEX:**
+![gopokedex2](gopokedex2.png)
 
 ## v2.0.0 - desacoplar componentes con context, useReducer
 

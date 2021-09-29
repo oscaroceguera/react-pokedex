@@ -47,4 +47,10 @@ export const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontSize: "32px",
   },
+  savedPokemons: {
+    "&:hover": {
+      color: "#3498db",
+      cursor: "pointer",
+    },
+  },
 }));

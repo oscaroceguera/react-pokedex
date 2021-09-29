@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useHistory } from "react-router-dom";
 import ReactDOM from "react-dom";
 
 import Card from "@material-ui/core/Card";
@@ -17,6 +18,7 @@ const Modal = ({
   pokemonsPokedex,
   removeAllPokemon,
 }) => {
+  let history = useHistory();
   const classes = useStyles();
   const node = useRef();
 
@@ -32,6 +34,10 @@ const Modal = ({
     }
   };
 
+  const goToPokedex = () => {
+    history.push("/pokedex");
+  };
+
   return isOpened
     ? ReactDOM.createPortal(
         <Card ref={node} className={classes.root}>
@@ -43,7 +49,12 @@ const Modal = ({
                 <small>Seleccionados</small>
               </div>
               <div>
-                <h3 className={classes.info}>{pokemonsPokedex}</h3>
+                <h3
+                  className={[classes.info, classes.savedPokemons].join(" ")}
+                  onClick={goToPokedex}
+                >
+                  {pokemonsPokedex}
+                </h3>
                 <small>Guardados</small>
               </div>
             </div>
@@ -76,7 +87,7 @@ Modal.propTypes = {
   isOpened: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   pokemonsSelected: PropTypes.number.isRequired,
-  savePokemon: PropTypes.func.isRequired,
+  savePokemon: PropTypes.func,
   pokemonsPokedex: PropTypes.number.isRequired,
 };
 

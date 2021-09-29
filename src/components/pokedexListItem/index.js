@@ -8,13 +8,8 @@ import useStyles from "./styled";
 
 import { apiUrl } from "../../helpers/constants";
 
-const ListItem = ({
-  pokemon,
-  selectPokemon,
-  pokemonsSelected,
-  removePokemon,
-  pokemonsPokedex,
-}) => {
+const ListItem = ({ pokemon, removePokemon }) => {
+  console.log("🚀 ~ file: index.js ~ line 12 ~ ListItem ~ pokemon", pokemon);
   const classes = useStyles();
   const id = pokemon.url.replace(apiUrl, "").replace("/", "");
   const image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
@@ -25,22 +20,15 @@ const ListItem = ({
     history.push(`/detail/${id}`);
   };
 
-  const handleSelectPokemon = () => {
-    selectPokemon({ ...pokemon, id });
-  };
   const handleRemovePokemon = () => {
-    removePokemon(id);
+    removePokemon(pokemon.objectId);
   };
-
-  const isAdded = pokemonsSelected.find((item) => item.id === id);
-  const inPokedex = pokemonsPokedex.find((item) => item.id === id);
 
   return (
     <Card className={classes.root}>
       <CardContent>
         <img src={image} alt="pokemon" />
         <h3>{pokemon.name}</h3>
-        {inPokedex && <h4 style={{ color: "#27ae60" }}>GUARDADO</h4>}
 
         <div className={classes.btnContainer}>
           <Button variant="contained" color="primary" onClick={handleClick}>
@@ -49,12 +37,11 @@ const ListItem = ({
           <Button
             variant="contained"
             classes={{
-              root: isAdded ? classes.btnDelete : classes.btnAdd,
+              root: classes.btnDelete,
             }}
-            onClick={isAdded ? handleRemovePokemon : handleSelectPokemon}
-            disabled={!!inPokedex}
+            onClick={handleRemovePokemon}
           >
-            {isAdded ? "eliminar" : "agregar"}
+            eliminar
           </Button>
         </div>
       </CardContent>
@@ -62,16 +49,9 @@ const ListItem = ({
   );
 };
 
-ListItem.defaultProps = {
-  pokemonsSelected: [],
-};
-
 ListItem.propTypes = {
   pokemon: PropTypes.object.isRequired,
-  selectPokemon: PropTypes.func.isRequired,
-  pokemonsSelected: PropTypes.array,
-  removePokemon: PropTypes.func.isRequired,
-  pokemonsPokedex: PropTypes.array.isRequired,
+  removePokemon: PropTypes.func,
 };
 
 export default ListItem;

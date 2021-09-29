@@ -8,6 +8,8 @@ import List from "../../components/list";
 import EmptyList from "../../components/emptyList";
 import Pokedex from "../pokedex";
 
+import { pokemonApi, pokedexApi } from "../../helpers/constants";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "16px",
@@ -16,9 +18,6 @@ const useStyles = makeStyles((theme) => ({
     gap: "20px",
   },
 }));
-
-const pokemonApi = "https://pokeapi.co/api/v2/pokemon?limit=30";
-const pokedexApi = "https://614fd3dba706cd00179b7303.mockapi.io/pokemons";
 
 const Dashboard = () => {
   const classes = useStyles();
@@ -31,6 +30,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       setError(null);
       setOpen(false);
       try {
@@ -45,7 +45,6 @@ const Dashboard = () => {
     };
     fetchData();
   }, []);
-
 
   useEffect(() => {
     const fetchData = async () => {
