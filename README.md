@@ -133,8 +133,15 @@ console.log("ID", id); // 1
 **POKEDEX:**
 ![gopokedex2](gopokedex2.png)
 
-## v2.0.0 - desacoplar componentes con context, useReducer
+## v2.0.0 - Componentes con useReducer
 
-## v2.0.1 - Estilo responsivo
+- Investigar Context del API de react https://es.reactjs.org/docs/context.html
+- Investigar usar Context con Hook (useContext) https://es.reactjs.org/docs/hooks-reference.html#usecontext
+- Investigar useReducer Hook https://es.reactjs.org/docs/hooks-reference.html#usereducer
+- Integrar useContext y useReducer para gestinonar los estados globalmente
+
+## v2.0.1- desacoplar componentes con context, useReducer
+
+## v2.0.2 - Estilo responsivo
 
 ## v2.1.0 - subir a netlify

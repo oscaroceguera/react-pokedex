@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -19,114 +19,183 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const INITIAL_STATE = {
+  loading: true,
+  error: null,
+  data: [],
+  pokemonsSelected: [],
+  pokemonsPokedex: [],
+  open: false,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_GET_POKEMONS":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        open: false,
+      };
+    case "SUCCESS_GET_POKEMOMS":
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+      };
+    case "ERROR_GET_POKEMONS":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        open: true,
+      };
+    case "POKEMON_SELECTED":
+      return {
+        ...state,
+        pokemonsSelected: [...state.pokemonsSelected, action.payload],
+      };
+    case "REMOVE_POKEMON":
+      const newList = state.pokemonsSelected.filter(
+        (item) => item.id !== action.payload
+      );
+      return {
+        ...state,
+        pokemonsSelected: newList,
+      };
+    case "REMOVE_ALL_POKEMON":
+      return {
+        ...state,
+        pokemonsSelected: [],
+      };
+    case "REMOVE_ALL_POKEMON_SELECTED":
+      return {
+        ...state,
+        pokemonsSelected: [],
+        loading: false,
+      };
+    case "SET_POKEDEX":
+      return {
+        ...state,
+        error: null,
+        open: false,
+      };
+    case "SUCCESS_SET_POKEDEX":
+      return {
+        ...state,
+        loading: false,
+        pokemonsPokedex: action.payload,
+      };
+    case "ERROR_SET_POKEDEX":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        open: true,
+      };
+    case "CLOSE_NACKBAR":
+      return {
+        ...state,
+        open: false,
+      };
+    default:
+      return state;
+  }
+};
+
 const Dashboard = () => {
+  console.log("RENDER");
   const classes = useStyles();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [pokemonsSelected, setPokemonsSelected] = useState([]);
-  const [pokemonsPokedex, setPokemonsPokedex] = useState([]);
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+  const fetchData = async () => {
+    dispatch({ type: "SET_GET_POKEMONS" });
+    try {
+      const data = await axios.get(pokemonApi).then((res) => res.data);
+      dispatch({ type: "SUCCESS_GET_POKEMOMS", payload: data.results });
+    } catch (error) {
+      dispatch({ type: "ERROR_GET_POKEMONS", payload: "Ocurrio un error!" });
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      setOpen(false);
-      try {
-        const data = await axios.get(pokemonApi).then((res) => res.data);
-        setLoading(false);
-        setData(data.results);
-      } catch (error) {
-        setLoading(false);
-        setError("Ocurrio un error!");
-        setOpen(true);
-      }
-    };
     fetchData();
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      setError(null);
-      setOpen(false);
+      dispatch({ type: "SET_POKEDEX" });
+
       try {
         const data = await axios.get(pokedexApi).then((res) => res.data);
-        setLoading(false);
-        setPokemonsPokedex(data);
+        dispatch({ type: "SUCCESS_SET_POKEDEX", payload: data });
       } catch (error) {
-        setLoading(false);
-        setError("Ocurrio un error!");
-        setOpen(true);
+        dispatch({ type: "ERROR_SET_POKEDEX", payload: "Ocurrio un error!" });
       }
     };
 
     fetchData();
-  }, [pokemonsSelected]);
+  }, [state.pokemonsSelected]);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
 
-    setOpen(false);
+    dispatch({ type: "CLOSE_NACKBAR" });
   };
 
   const selectPokemon = (pokemon) => {
-    setPokemonsSelected([...pokemonsSelected, pokemon]);
+    dispatch({ type: "POKEMON_SELECTED", payload: pokemon });
   };
 
   const removePokemon = (id) => {
-    const newList = pokemonsSelected.filter((item) => item.id !== id);
-    setPokemonsSelected(newList);
+    dispatch({ type: "REMOVE_POKEMON", payload: id });
   };
 
   const removeAllPokemon = () => {
-    setPokemonsSelected([]);
+    dispatch({ type: "REMOVE_ALL_POKEMON" });
   };
 
   const savePokemon = async () => {
-    setLoading(true);
-    setError(null);
-    setOpen(false);
+    dispatch({ type: "SET_POKEDEX" });
     try {
-      for await (const res of pokemonsSelected.map((i) => i)) {
+      for await (const res of state.pokemonsSelected.map((i) => i)) {
         await axios.post(pokedexApi, res);
       }
-      setLoading(false);
-      setPokemonsSelected([]);
+      dispatch({ type: "REMOVE_ALL_POKEMON_SELECTED" });
     } catch (error) {
-      setLoading(false);
-      setError("Ocurrio un error!");
-      setOpen(true);
+      dispatch({ type: "ERROR_SET_POKEDEX", payload: "Ocurrio un error!" });
     }
   };
 
-  if (error)
-    return <Error open={open} handleClose={handleClose} error={error} />;
+  if (state.error)
+    return (
+      <Error open={state.open} handleClose={handleClose} error={state.error} />
+    );
 
-  if (loading) return <Loading />;
+  if (state.loading) return <Loading />;
 
   return (
     <>
-      {data.length === 0 && <EmptyList />}
+      {state.data.length === 0 && <EmptyList />}
       <div className={classes.root}>
-        {data.map((pokemon) => {
+        {state.data.map((pokemon) => {
           return (
             <List
               key={pokemon.name}
               pokemon={pokemon}
               selectPokemon={selectPokemon}
               removePokemon={removePokemon}
-              pokemonsSelected={pokemonsSelected}
-              pokemonsPokedex={pokemonsPokedex}
+              pokemonsSelected={state.pokemonsSelected}
+              pokemonsPokedex={state.pokemonsPokedex}
             />
           );
         })}
       </div>
       <Pokedex
-        pokemonsSelected={pokemonsSelected}
-        pokemonsPokedex={pokemonsPokedex}
+        pokemonsSelected={state.pokemonsSelected}
+        pokemonsPokedex={state.pokemonsPokedex}
         savePokemon={savePokemon}
         removeAllPokemon={removeAllPokemon}
       />

@@ -42,7 +42,9 @@ const Modal = ({
     ? ReactDOM.createPortal(
         <Card ref={node} className={classes.root}>
           <CardContent>
-            <p className={classes.closeMark}>x</p>
+            <p className={classes.closeMark} onClick={onClose}>
+              x
+            </p>
             <div className={classes.infoContainer}>
               <div>
                 <h3 className={classes.info}>{pokemonsSelected}</h3>

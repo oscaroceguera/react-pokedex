@@ -43,8 +43,6 @@ const PokedexList = () => {
     fetchData();
   }, []);
 
-  // TODO: remove pokemon of pokedex
-
   const removePokemon = async (id) => {
     setLoading(true);
     setError(null);
