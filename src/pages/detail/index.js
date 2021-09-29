@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,6 +6,9 @@ import Paper from "@material-ui/core/Paper";
 
 import Loading from "../../components/loading";
 import Error from "../../components/error";
+
+import { useOwnContext } from "../../store/storeApi";
+import { apiUrl } from "../../helpers/constants";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,26 +48,28 @@ const useStyles = makeStyles((theme) => ({
 
 const Detail = () => {
   const classes = useStyles();
+  const {
+    loading,
+    error,
+    pokemon,
+    open,
+    setPokemonDetail,
+    successSetPokemonDdetail,
+    closeNackbar,
+    errorGetPokemons,
+  } = useOwnContext();
   let { pokemonId } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState();
-  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      setError(null);
-      setOpen(false);
+      setPokemonDetail();
       try {
         const data = await axios
-          .get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`)
+          .get(`${apiUrl}${pokemonId}`)
           .then((res) => res.data);
-        setLoading(false);
-        setData(data);
+        successSetPokemonDdetail(data);
       } catch (error) {
-        setLoading(false);
-        setError("Ocurrio un error!");
-        setOpen(true);
+        errorGetPokemons("Ocurrio un error!");
       }
     };
     fetchData();
@@ -75,10 +80,9 @@ const Detail = () => {
       return;
     }
 
-    setOpen(false);
+    closeNackbar();
   };
 
-  // TODO: controlar el handlerClose y open
   if (error)
     return <Error open={open} handleClose={handleClose} error={error} />;
 
@@ -87,36 +91,40 @@ const Detail = () => {
   return (
     <div className={classes.root}>
       <Paper elevation={3}>
-        {data ? (
+        {pokemon ? (
           <div className={classes.container}>
-            <h1>{data.name}</h1>
+            <h1>{pokemon.name}</h1>
             <div>
               <img
-                src={data?.sprites.front_default}
+                src={pokemon?.sprites.front_default}
                 alt="front"
                 width="200px"
               />
-              <img src={data.sprites.back_default} alt="back" width="200px" />
+              <img
+                src={pokemon.sprites.back_default}
+                alt="back"
+                width="200px"
+              />
             </div>
             <small>Habilidades</small>
             <div style={{ display: "flex" }}>
-              {data.abilities.map(({ ability }) => (
+              {pokemon.abilities.map(({ ability }) => (
                 <h3 className={classes.abilities} key={ability.name}>
                   {ability.name}
                 </h3>
               ))}
             </div>
             <small>Experiencia</small>
-            <h3 className={classes.info}>{data.base_experience}</h3>
+            <h3 className={classes.info}>{pokemon.base_experience}</h3>
             <small>Altura</small>
-            <h3 className={classes.info}>{data.height}</h3>
+            <h3 className={classes.info}>{pokemon.height}</h3>
             <small>Peso</small>
-            <h3 className={classes.info}>{data.weight}</h3>
+            <h3 className={classes.info}>{pokemon.weight}</h3>
             <small>Especie</small>
-            <h3 className={classes.info}>{data.species.name}</h3>
+            <h3 className={classes.info}>{pokemon.species.name}</h3>
             <small>Tipo</small>
             <div style={{ display: "flex" }}>
-              {data.types.map(({ type }) => (
+              {pokemon.types.map(({ type }) => (
                 <h3 className={classes.abilities} key={type.name}>
                   {type.name}
                 </h3>

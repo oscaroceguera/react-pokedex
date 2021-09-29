@@ -135,12 +135,16 @@ console.log("ID", id); // 1
 
 ## v2.0.0 - Componentes con useReducer
 
+- Investigar arquitectura Flux (action, action creators, dispatch, reducer, ...etc)
+- Investigar useReducer Hook https://es.reactjs.org/docs/hooks-reference.html#usereducer
+- Integrar useReducer solo para la parte del dashboard
+
+## v2.0.1- desacoplar componentes con context, useReducer
+
 - Investigar Context del API de react https://es.reactjs.org/docs/context.html
 - Investigar usar Context con Hook (useContext) https://es.reactjs.org/docs/hooks-reference.html#usecontext
 - Investigar useReducer Hook https://es.reactjs.org/docs/hooks-reference.html#usereducer
-- Integrar useContext y useReducer para gestinonar los estados globalmente
-
-## v2.0.1- desacoplar componentes con context, useReducer
+- Integrar useContext y useReducer para el proyecto usando la arquitectura flux
 
 ## v2.0.2 - Estilo responsivo
 

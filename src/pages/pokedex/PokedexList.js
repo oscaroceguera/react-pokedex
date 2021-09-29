@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -7,6 +7,8 @@ import Error from "../../components/error";
 import EmptyList from "../../components/emptyList";
 import PokedexListItem from "../../components/pokedexListItem";
 import { pokedexApi } from "../../helpers/constants";
+
+import { useOwnContext } from "../../store/storeApi";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,23 +21,25 @@ const useStyles = makeStyles((theme) => ({
 
 const PokedexList = () => {
   const classes = useStyles();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState([]);
-  const [open, setOpen] = useState(false);
+  const {
+    loading,
+    error,
+    data,
+    open,
+    setGetPokemons,
+    successGetPokemons,
+    errorGetPokemons,
+    closeNackbar,
+    setLoading,
+  } = useOwnContext();
 
   const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    setOpen(false);
+    setGetPokemons();
     try {
       const data = await axios.get(pokedexApi).then((res) => res.data);
-      setLoading(false);
-      setData(data);
+      successGetPokemons(data);
     } catch (error) {
-      setLoading(false);
-      setError("Ocurrio un error!");
-      setOpen(true);
+      errorGetPokemons("Ocurrio un error!");
     }
   };
 
@@ -44,17 +48,13 @@ const PokedexList = () => {
   }, []);
 
   const removePokemon = async (id) => {
-    setLoading(true);
-    setError(null);
-    setOpen(false);
+    setGetPokemons();
     try {
       await axios.delete(`${pokedexApi}/${id}`);
       setLoading(false);
       fetchData();
     } catch (error) {
-      setLoading(false);
-      setError("Ocurrio un error!");
-      setOpen(true);
+      errorGetPokemons("Ocurrio un error!");
     }
   };
 
@@ -63,7 +63,7 @@ const PokedexList = () => {
       return;
     }
 
-    setOpen(false);
+    closeNackbar();
   };
 
   if (error)

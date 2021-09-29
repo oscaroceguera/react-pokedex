@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
 
+import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
 import Modal from "./CartModal";
+
+import { useOwnContext } from "../../store/storeApi";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,13 +17,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Pokedex = ({
-  pokemonsSelected,
-  savePokemon,
-  pokemonsPokedex,
-  removeAllPokemon,
-}) => {
+const Pokedex = () => {
   const classes = useStyles();
+  const { pokemonsSelected } = useOwnContext();
   const [showCart, setShowCart] = useState(false);
 
   const showCartHandler = () => {
@@ -35,14 +32,7 @@ const Pokedex = ({
 
   return (
     <>
-      <Modal
-        isOpened={showCart}
-        onClose={closeModal}
-        pokemonsSelected={pokemonsSelected.length}
-        savePokemon={savePokemon}
-        pokemonsPokedex={pokemonsPokedex.length}
-        removeAllPokemon={removeAllPokemon}
-      />
+      <Modal isOpened={showCart} onClose={closeModal} />
       {!showCart && (
         <IconButton
           aria-label="cart"
@@ -56,18 +46,6 @@ const Pokedex = ({
       )}
     </>
   );
-};
-
-Pokedex.defaultProps = {
-  pokemonsSelected: [],
-  pokemonsPokedex: [],
-};
-
-Pokedex.propTypes = {
-  pokemonsSelected: PropTypes.array.isRequired,
-  savePokemon: PropTypes.func,
-  pokemonsPokedex: PropTypes.array,
-  removeAllPokemon: PropTypes.func,
 };
 
 export default Pokedex;

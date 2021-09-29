@@ -1,25 +1,31 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
+import axios from "axios";
 import ReactDOM from "react-dom";
+import { useHistory } from "react-router-dom";
 
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
 import CardContent from "@material-ui/core/CardContent";
+
+import { useOwnContext } from "../../store/storeApi";
+import { pokedexApi } from "../../helpers/constants";
+
 import { useStyles } from "./CartModal.styled";
 
 const modalContainer = document.querySelector("#modalContainer");
 
-const Modal = ({
-  isOpened,
-  onClose,
-  pokemonsSelected,
-  savePokemon,
-  pokemonsPokedex,
-  removeAllPokemon,
-}) => {
+const Modal = ({ isOpened, onClose }) => {
   let history = useHistory();
   const classes = useStyles();
+  const {
+    pokemonsSelected,
+    pokemonsPokedex,
+    removeAllPokemon,
+    errorSetPokedex,
+    removeAllPokemonSelected,
+    setPokedex,
+  } = useOwnContext();
   const node = useRef();
 
   useEffect(() => {
@@ -38,6 +44,18 @@ const Modal = ({
     history.push("/pokedex");
   };
 
+  const savePokemon = async () => {
+    setPokedex();
+    try {
+      for await (const res of pokemonsSelected.map((i) => i)) {
+        await axios.post(pokedexApi, res);
+      }
+      removeAllPokemonSelected();
+    } catch (error) {
+      errorSetPokedex("Ocurrio un error!");
+    }
+  };
+
   return isOpened
     ? ReactDOM.createPortal(
         <Card ref={node} className={classes.root}>
@@ -47,7 +65,7 @@ const Modal = ({
             </p>
             <div className={classes.infoContainer}>
               <div>
-                <h3 className={classes.info}>{pokemonsSelected}</h3>
+                <h3 className={classes.info}>{pokemonsSelected.length}</h3>
                 <small>Seleccionados</small>
               </div>
               <div>
@@ -55,7 +73,7 @@ const Modal = ({
                   className={[classes.info, classes.savedPokemons].join(" ")}
                   onClick={goToPokedex}
                 >
-                  {pokemonsPokedex}
+                  {pokemonsPokedex.length}
                 </h3>
                 <small>Guardados</small>
               </div>
@@ -88,9 +106,6 @@ const Modal = ({
 Modal.propTypes = {
   isOpened: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  pokemonsSelected: PropTypes.number.isRequired,
-  savePokemon: PropTypes.func,
-  pokemonsPokedex: PropTypes.number.isRequired,
 };
 
 export default Modal;

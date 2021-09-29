@@ -4,17 +4,14 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
-import useStyles from "./styled";
+import { useOwnContext } from "../../store/storeApi";
 
 import { apiUrl } from "../../helpers/constants";
 
-const ListItem = ({
-  pokemon,
-  selectPokemon,
-  pokemonsSelected,
-  removePokemon,
-  pokemonsPokedex,
-}) => {
+import useStyles from "./styled";
+const ListItem = ({ pokemon }) => {
+  const { pokemonsSelected, pokemonsPokedex, pokemonSelected, removePokemon } =
+    useOwnContext();
   const classes = useStyles();
   const id = pokemon.url.replace(apiUrl, "").replace("/", "");
   const image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
@@ -26,8 +23,9 @@ const ListItem = ({
   };
 
   const handleSelectPokemon = () => {
-    selectPokemon({ ...pokemon, id });
+    pokemonSelected({ ...pokemon, id });
   };
+
   const handleRemovePokemon = () => {
     removePokemon(id);
   };
@@ -62,16 +60,8 @@ const ListItem = ({
   );
 };
 
-ListItem.defaultProps = {
-  pokemonsSelected: [],
-};
-
 ListItem.propTypes = {
   pokemon: PropTypes.object.isRequired,
-  selectPokemon: PropTypes.func.isRequired,
-  pokemonsSelected: PropTypes.array,
-  removePokemon: PropTypes.func.isRequired,
-  pokemonsPokedex: PropTypes.array.isRequired,
 };
 
 export default ListItem;
